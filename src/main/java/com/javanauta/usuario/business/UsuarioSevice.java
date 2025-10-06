@@ -47,4 +47,16 @@ public class UsuarioSevice {
 
         }
     }
+
+    public void apagarPeloEmail(String email){
+
+        usuarioRepository.deleteByEmail(email);
+    }
+
+    public UsuariosEntity BuscarPorEmail(String email){
+
+        return  usuarioRepository.findByEmail(email).orElseThrow(
+                () -> new ConflictExceptions("email não existe" + email )
+        );
+    }
 }

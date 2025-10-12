@@ -128,4 +128,43 @@ public class UsuarioConverter {
         return telefoneDTOS;
     }
 
+    public UsuariosEntity updateUsuario (UsuarioDTO dto, UsuariosEntity entity){
+
+        return UsuariosEntity.builder()
+
+                .id(entity.getId())
+                .nome(dto.getNome() != null ? dto.getNome() : entity.getNome())
+                .email(dto.getEmail() != null ? dto.getEmail() : entity.getEmail())
+                .senha(dto.getSenha() != null ? dto.getSenha() : entity.getSenha())
+                .enderecos(entity.getEnderecos())
+                .telefone(entity.getTelefone())
+                .build();
+
+
+    }
+
+    public EnderecosEntity updateEndereco ( EnderecoDTO dto, EnderecosEntity enderecos){
+
+        return EnderecosEntity.builder()
+
+                .id(enderecos.getId())
+                .rua(dto.getRua() != null ? dto.getRua() : enderecos.getRua())
+                .numero(dto.getNumero() != null ? dto.getNumero() : enderecos.getNumero())
+                .complemento(dto.getComplemento() != null ? dto.getComplemento() : enderecos.getComplemento())
+                .cidade(dto.getCidade() != null ? dto.getCidade() : enderecos.getCidade())
+                .estado(dto.getEstado() != null ? dto.getEstado() : enderecos.getEstado())
+                .cep(dto.getCep() != null ? dto.getCep() : enderecos.getCep())
+                .build();
+    }
+
+    public TelefoneEntity updateTelefone(TelefoneDTO dto, TelefoneEntity telefone){
+
+        return TelefoneEntity.builder()
+
+                .id(telefone.getId())
+                .ddd(dto.getDdd() != null ? dto.getDdd() : telefone.getDdd())
+                .numero(dto.getNumero() != null ? dto.getNumero() : telefone.getNumero())
+                .build();
+    }
+
 }

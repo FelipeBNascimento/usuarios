@@ -16,6 +16,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.PreparedStatement;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/usuario")
@@ -80,5 +82,19 @@ public class UsuarioController {
                                                           @RequestBody TelefoneDTO telefoneDTO){
 
         return ResponseEntity.ok(usuarioSevice.atualizarTelefone(id, telefoneDTO));
+    }
+
+    @PostMapping("/endereco")
+    public ResponseEntity<EnderecoDTO> cadastrarEndereco(@RequestBody EnderecoDTO enderecoDTO,
+                                                         @RequestHeader ("Authorization") String token){
+
+        return ResponseEntity.ok(usuarioSevice.cadastrarEndereco(token, enderecoDTO));
+    }
+
+    @PostMapping("/telefone")
+    public ResponseEntity<TelefoneDTO> cadastrarTelefone (@RequestBody TelefoneDTO telefoneDTO,
+                                                          @RequestHeader("Authorization") String token){
+
+        return ResponseEntity.ok(usuarioSevice.cadastrarTelefone(token, telefoneDTO));
     }
 }

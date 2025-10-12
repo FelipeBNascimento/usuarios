@@ -5,6 +5,7 @@ import com.javanauta.usuario.infraesctruture.entity.EnderecosEntity;
 import com.javanauta.usuario.infraesctruture.entity.TelefoneEntity;
 import com.javanauta.usuario.infraesctruture.entity.UsuariosEntity;
 import com.javanauta.usuario.infraesctruture.exceptions.ConflictExceptions;
+import com.javanauta.usuario.infraesctruture.exceptions.EmailNaoExiste;
 import com.javanauta.usuario.infraesctruture.exceptions.IdNaoEncontrado;
 import com.javanauta.usuario.infraesctruture.repository.EnderecoRepository;
 import com.javanauta.usuario.infraesctruture.repository.TelefoneRepository;
@@ -77,7 +78,7 @@ public class UsuarioSevice {
                 passwordEncoder.encode(usuarioDTO.getSenha()) : null );
 
         UsuariosEntity usuarios1 =  usuarioRepository.findByEmail(email).orElseThrow(
-                () ->  new RuntimeException("Email não encontrado")
+                () ->  new EmailNaoExiste("Email não encontrado")
     );
 
         UsuariosEntity usuarioAtualizado =  usuarioConverter.updateUsuario(usuarioDTO,
@@ -112,4 +113,32 @@ public class UsuarioSevice {
 
         return usuarioConverter.paraTelefoneDTO( telefoneRepository.save(telefoneAtualizado));
     }
+
+    public EnderecoDTO cadastrarEndereco (String token, EnderecoDTO enderecoDTO){
+
+        String email = jwtUtil.extraiToken(token.substring(7));
+        UsuariosEntity usuariosEntity = usuarioRepository.findByEmail(email).orElseThrow(
+                () -> new EmailNaoExiste("Email não existente " + email)
+        );
+        EnderecosEntity enderecosEntity = usuarioConverter.parCadastrarEndereco
+                (enderecoDTO, usuariosEntity.getId());
+        EnderecosEntity enderecoSalvo = enderecoRepository.save(enderecosEntity);
+        return usuarioConverter.paraEnderecoDTO(enderecoSalvo);
+    }
+
+    public TelefoneDTO cadastrarTelefone(String token, TelefoneDTO telefoneDTO){
+
+        String email = jwtUtil.extraiToken(token.substring(7));
+
+        UsuariosEntity usuario = usuarioRepository.findByEmail(email).orElseThrow(
+                ()-> new EmailNaoExiste("Email não existente" + email)
+        );
+
+        TelefoneEntity telefoneEntity = usuarioConverter.paraCadastrarTelefone(telefoneDTO,
+                usuario.getId());
+
+        TelefoneEntity telefoneSalvo = telefoneRepository.save(telefoneEntity);
+        return usuarioConverter.paraTelefoneDTO(telefoneSalvo);
+    }
+
 }

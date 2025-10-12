@@ -23,4 +23,8 @@ public class TelefoneEntity {
 
     @Column(name = "numero", length = 10)
     private String numero;
+
+    @Column(name = "usuario_id")
+    private Long usuario_id;
+
 }

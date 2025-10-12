@@ -1,9 +1,15 @@
 package com.javanauta.usuario.business;
 
 import com.javanauta.usuario.business.converter.UsuarioConverter;
+import com.javanauta.usuario.infraesctruture.entity.EnderecosEntity;
+import com.javanauta.usuario.infraesctruture.entity.TelefoneEntity;
 import com.javanauta.usuario.infraesctruture.entity.UsuariosEntity;
 import com.javanauta.usuario.infraesctruture.exceptions.ConflictExceptions;
+import com.javanauta.usuario.infraesctruture.exceptions.IdNaoEncontrado;
+import com.javanauta.usuario.infraesctruture.repository.EnderecoRepository;
+import com.javanauta.usuario.infraesctruture.repository.TelefoneRepository;
 import com.javanauta.usuario.infraesctruture.repository.UsuarioRepository;
+import com.javanauta.usuario.infraesctruture.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,6 +22,9 @@ public class UsuarioSevice {
     private final UsuarioRepository usuarioRepository;
     private final UsuarioConverter usuarioConverter;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
+    private final EnderecoRepository enderecoRepository;
+    private final TelefoneRepository telefoneRepository;
 
 
     public UsuarioDTO salvarusuario(UsuarioDTO usuarioDTO) {
@@ -58,5 +67,49 @@ public class UsuarioSevice {
         return  usuarioRepository.findByEmail(email).orElseThrow(
                 () -> new ConflictExceptions("email não existe" + email )
         );
+    }
+
+    public UsuarioDTO atualizarUsuario(String token, UsuarioDTO usuarioDTO){
+
+        String email = jwtUtil.extraiToken(token.substring(7));
+
+        usuarioDTO.setSenha(usuarioDTO.getSenha() != null ?
+                passwordEncoder.encode(usuarioDTO.getSenha()) : null );
+
+        UsuariosEntity usuarios1 =  usuarioRepository.findByEmail(email).orElseThrow(
+                () ->  new RuntimeException("Email não encontrado")
+    );
+
+        UsuariosEntity usuarioAtualizado =  usuarioConverter.updateUsuario(usuarioDTO,
+                usuarios1);
+
+        UsuariosEntity usuarioSalvo = usuarioRepository.save(usuarioAtualizado);
+
+        return usuarioConverter.parausuarioDTO(usuarioSalvo);
+
+
+    }
+
+    public EnderecoDTO atualizarEndereco (Long idEndereco, EnderecoDTO enderecoDTO){
+
+        EnderecosEntity enderecoNoBanco =  enderecoRepository.findById(idEndereco).orElseThrow(
+                ()-> new IdNaoEncontrado("Id não encontrado " + idEndereco)
+        );
+
+        EnderecosEntity enderecoAtualizado =  usuarioConverter.updateEndereco(enderecoDTO, enderecoNoBanco);
+
+        return usuarioConverter.paraEnderecoDTO(enderecoRepository.save(enderecoAtualizado));
+
+    }
+
+    public TelefoneDTO atualizarTelefone (Long idTelefone, TelefoneDTO telefoneDTO){
+
+        TelefoneEntity telefoneNoBanco  = telefoneRepository.findById(idTelefone).orElseThrow(
+                () -> new IdNaoEncontrado("Id não encotrado " + idTelefone)
+        );
+
+        TelefoneEntity telefoneAtualizado = usuarioConverter.updateTelefone(telefoneDTO, telefoneNoBanco);
+
+        return usuarioConverter.paraTelefoneDTO( telefoneRepository.save(telefoneAtualizado));
     }
 }

@@ -1,6 +1,8 @@
 package com.javanauta.usuario.controller;
 
 
+import com.javanauta.usuario.business.EnderecoDTO;
+import com.javanauta.usuario.business.TelefoneDTO;
 import com.javanauta.usuario.business.UsuarioDTO;
 import com.javanauta.usuario.business.UsuarioSevice;
 import com.javanauta.usuario.infraesctruture.entity.UsuariosEntity;
@@ -56,4 +58,27 @@ public class UsuarioController {
     //                new UsernamePasswordAuthenticationToken(
     //                        usuarioDto.getEmail(), usuarioDto.getSenha()));
     //        return "Bearer " +  jwtUtil.generateToken(authentication.getName());
+
+    @PutMapping
+
+    public ResponseEntity<UsuarioDTO> atualizarUsuario(@RequestBody UsuarioDTO usuarioDTO,
+                                                       @RequestHeader ("Authorization") String token){
+        return ResponseEntity.ok( usuarioSevice.atualizarUsuario(token, usuarioDTO));
+
+    }
+
+    @PutMapping("/endereco")
+    public ResponseEntity<EnderecoDTO> atualiazarEndereco(@RequestParam Long id,
+                                                          @RequestBody EnderecoDTO enderecoDTO){
+
+        return ResponseEntity.ok(usuarioSevice.atualizarEndereco(id, enderecoDTO));
+
+    }
+
+    @PutMapping("/telefone")
+    public ResponseEntity<TelefoneDTO> atualziarTelefone (@RequestParam Long id,
+                                                          @RequestBody TelefoneDTO telefoneDTO){
+
+        return ResponseEntity.ok(usuarioSevice.atualizarTelefone(id, telefoneDTO));
+    }
 }
